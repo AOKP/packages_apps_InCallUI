@@ -22,18 +22,26 @@ import com.android.services.telephony.common.Call.State;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.FragmentTransaction;
+import android.content.BroadcastReceiver;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
+import android.content.Context;
 import android.content.DialogInterface.OnCancelListener;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.WindowManagerPolicy;
 import android.view.accessibility.AccessibilityEvent;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 /**
@@ -56,11 +64,33 @@ public class InCallActivity extends Activity {
     /** Use to pass 'showDialpad' from {@link #onNewIntent} to {@link #onResume} */
     private boolean mShowDialpadRequested;
 
+    private int[] mCoverWindowCoords = null;
+    private BroadcastReceiver mLidStateChangeReceiver = new BroadcastReceiver() {
+        @Override
+    public void onReceive(Context context, Intent intent) {
+         if (WindowManagerPolicy.ACTION_LID_STATE_CHANGED.equals(intent.getAction())) {
+             boolean on = intent.getIntExtra(WindowManagerPolicy.EXTRA_LID_STATE,
+                      WindowManagerPolicy.WindowManagerFuncs.LID_ABSENT)
+                      == WindowManagerPolicy.WindowManagerFuncs.LID_CLOSED;
+                showSmartCover(on);
+            }
+        }
+    };
+
     @Override
     protected void onCreate(Bundle icicle) {
         Log.d(this, "onCreate()...  this = " + this);
 
         super.onCreate(icicle);
+
+        }
+
+        mCoverWindowCoords = getResources().getIntArray(
+                com.android.internal.R.array.config_smartCoverWindowCoords);
+        if (mCoverWindowCoords != null && mCoverWindowCoords.length != 4) {
+            // make sure there are exactly 4 dimensions provided, or ignore
+            mCoverWindowCoords = null;
+        }
 
         // set this flag so this activity will stay in front of the keyguard
         // Have the WindowManager filter out touch events that are "too fat".
@@ -102,6 +132,11 @@ public class InCallActivity extends Activity {
         if (mShowDialpadRequested) {
             mCallButtonFragment.displayDialpad(true);
             mShowDialpadRequested = false;
+
+        updateSystemBarTranslucency();
+        if (mCoverWindowCoords != null) {
+            registerReceiver(mLidStateChangeReceiver, new IntentFilter(
+                    WindowManagerPolicy.ACTION_LID_STATE_CHANGED));
         }
     }
 
@@ -111,6 +146,9 @@ public class InCallActivity extends Activity {
     protected void onPause() {
         Log.d(this, "onPause()...");
         super.onPause();
+        if (mCoverWindowCoords != null) {
+            unregisterReceiver(mLidStateChangeReceiver);
+        }
 
         mIsForegroundActivity = false;
 
