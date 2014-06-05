@@ -18,6 +18,7 @@ package com.android.incallui;
 
 import android.content.ContentUris;
 import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -25,6 +26,7 @@ import android.net.Uri;
 import android.os.Looper;
 import android.provider.ContactsContract.Contacts;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
+import android.provider.Settings;
 import android.telephony.PhoneNumberUtils;
 import android.text.TextUtils;
 
@@ -44,6 +46,9 @@ import com.google.common.base.Preconditions;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+
+import android.provider.ContactsContract;
+import android.provider.ContactsContract.CommonDataKinds;
 
 /**
  * Class responsible for querying Contact Information for Call objects. Can perform asynchronous
@@ -509,6 +514,11 @@ public class ContactInfoCache implements ContactsAsyncHelper.OnImageLoadComplete
         cce.location = displayLocation;
         cce.label = label;
         cce.isSipCall = isSipCall;
+
+        if (isIncoming && Settings.AOKP.getInt(context.getContentResolver(),
+                Settings.AOKP.DETAILED_INCALL_INFO, 0) == 1) {
+            getDetailedInfo(info.person_id, cce, context);
+        }
     }
 
     /**
@@ -557,12 +567,53 @@ public class ContactInfoCache implements ContactsAsyncHelper.OnImageLoadComplete
         public void onImageLoadComplete(int callId, ContactCacheEntry entry);
     }
 
+    private static void getDetailedInfo(final long contactId, ContactCacheEntry cce, Context context) {
+        final String[] projection = new String[] {
+                ContactsContract.Data.MIMETYPE,
+                CommonDataKinds.Nickname.NAME,
+                CommonDataKinds.Organization.COMPANY,
+                CommonDataKinds.Organization.TITLE,
+                CommonDataKinds.StructuredPostal.CITY
+        };
+        final String where = ContactsContract.Data.CONTACT_ID + " = " + contactId;
+        Cursor cursor = context.getContentResolver().query(
+                ContactsContract.Data.CONTENT_URI, projection, where, null, null);
+        String nickName = null, organization = null, position = null, city = null;
+        if (cursor != null) {
+            for (boolean valid = cursor.moveToFirst(); valid; valid = cursor.moveToNext()) {
+                final String mimeType = cursor.getString(0);
+                organization = cursor.getString(cursor.getColumnIndex(CommonDataKinds.Organization.COMPANY));
+                position = cursor.getString(cursor.getColumnIndex(CommonDataKinds.Organization.TITLE));
+                nickName = cursor.getString(cursor.getColumnIndex(CommonDataKinds.Nickname.NAME));
+                city = cursor.getString(cursor.getColumnIndex(CommonDataKinds.StructuredPostal.CITY));
+
+                if (TextUtils.equals(mimeType, CommonDataKinds.Organization.CONTENT_ITEM_TYPE) && organization != null) {
+                    cce.organization = organization;
+                }
+                if (TextUtils.equals(mimeType, CommonDataKinds.Organization.CONTENT_ITEM_TYPE) && position != null) {
+                    cce.position = position;
+                }
+                if (TextUtils.equals(mimeType, CommonDataKinds.Nickname.CONTENT_ITEM_TYPE) && nickName != null) {
+                    cce.nickName = nickName;
+                }
+                if (TextUtils.equals(mimeType, CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE) && city != null) {
+                    cce.city = city;
+                }
+            }
+            cursor.close();
+        }
+    }
+
     public static class ContactCacheEntry {
         public String name;
         public String number;
         public String location;
         public String label;
         public Drawable photo;
+        public String nickName;
+        public String organization;
+        public String position;
+        public String city;
         public boolean isSipCall;
         public Uri personUri; // Used for local photo load
 
