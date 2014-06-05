@@ -176,7 +176,57 @@
                       android:ellipsize="end"/>
         </LinearLayout>
 
-    </LinearLayout>
+        <LinearLayout android:id="@+id/detailedCallInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="@dimen/call_banner_side_padding"
+            android:paddingEnd="@dimen/call_banner_side_padding"
+            android:paddingTop="@dimen/call_banner_top_bottom_padding"
+            android:paddingBottom="@dimen/call_banner_top_bottom_padding"
+            android:orientation="vertical"
+            android:background="@color/incall_call_banner_background"
+            android:visibility="gone">
 
+        <LinearLayout android:id="@+id/organizationContainer"
+                      android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:paddingEnd="@dimen/call_banner_name_number_right_padding"
+                      android:orientation="horizontal">
+            <TextView android:id="@+id/position"
+                      android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:textAppearance="?android:attr/textAppearanceSmall"
+                      android:textColor="@color/incall_call_banner_text_color"
+                      android:singleLine="true"
+                      android:textDirection="ltr" />
+            <TextView android:id="@+id/organization"
+                      android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:textAppearance="?android:attr/textAppearanceSmall"
+                      android:textColor="@color/incall_call_banner_text_color"
+                      android:textStyle="bold"
+                      android:singleLine="true"
+                      android:layout_marginStart="3dp" />
+        </LinearLayout>
+
+        <TextView android:id="@+id/city"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:textAppearance="?android:attr/textAppearanceSmall"
+                  android:textColor="@color/incall_call_banner_text_color"
+                  android:maxLines="1"
+                  android:ellipsize="end" />
+
+        <TextView android:id="@+id/nickName"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:textAppearance="?android:attr/textAppearanceSmall"
+                  android:textColor="@color/incall_call_banner_text_color"
+                  android:maxLines="1"
+                  android:ellipsize="end" />
+
+        </LinearLayout>
+
+    </LinearLayout>
 
 </FrameLayout>
