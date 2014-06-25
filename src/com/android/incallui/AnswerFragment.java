@@ -99,6 +99,7 @@ public class AnswerFragment extends BaseFragment<AnswerPresenter, AnswerPresente
     @Override
     public void showAnswerUi(boolean show) {
         getView().setVisibility(show ? View.VISIBLE : View.GONE);
+        getView().setBackgroundColor(0);
 
         Log.d(this, "Show answer UI: " + show);
         if (show) {
