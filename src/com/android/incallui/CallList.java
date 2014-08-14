@@ -23,11 +23,13 @@ import com.google.common.base.Preconditions;
 
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
 
 import com.android.services.telephony.common.Call;
 import com.android.services.telephony.common.Call.DisconnectCause;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -477,5 +479,14 @@ public class CallList {
     public interface CallUpdateListener {
         // TODO: refactor and limit arg to be call state.  Caller info is not needed.
         public void onCallStateChanged(Call call);
+    }
+
+    public Call getCallWithStateAndNumber(int state, String number) {
+        for (Call call : mCallMap.values()) {
+            if (TextUtils.equals(call.getNumber(), number) && call.getState() == state) {
+                return call;
+            }
+        }
+        return null;
     }
 }

@@ -575,4 +575,8 @@
     <string name="blacklist_dialog_title">Add to blacklist</string>
     <string name="blacklist_dialog_message">Future calls from <xliff:g id="number">%s</xliff:g> will be blocked</string>
 
+    <!-- Text for in call recording action -->
+    <string name="onscreenRecordText">Start/stop recording</string>
+    <string name="call_recording_failed_message">Failed to start call recording</string>
+
 </resources>
