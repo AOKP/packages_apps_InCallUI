@@ -23,6 +23,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.text.format.DateUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -60,6 +61,7 @@ public class CallCardFragment extends BaseFragment<CallCardPresenter, CallCardPr
     private TextView mOrganization;
     private TextView mPosition;
     private TextView mCity;
+    private TextView mCallRecordingTimer;
 
     // Secondary caller info
     private ViewStub mSecondaryCallInfo;
@@ -69,6 +71,29 @@ public class CallCardFragment extends BaseFragment<CallCardPresenter, CallCardPr
 
     // Cached DisplayMetrics density.
     private float mDensity;
+
+    private CallRecorder.RecordingProgressListener mRecordingProgressListener =
+            new CallRecorder.RecordingProgressListener() {
+        @Override
+        public void onStartRecording() {
+            mCallRecordingTimer.setText(DateUtils.formatElapsedTime(0));
+            mCallRecordingTimer.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        public void onStopRecording() {
+            mCallRecordingTimer.setVisibility(View.GONE);
+        }
+
+        @Override
+        public void onRecordingTimeProgress(final long elapsedTimeMs) {
+            long elapsedSeconds = (elapsedTimeMs + 500) / 1000;
+            mCallRecordingTimer.setText(DateUtils.formatElapsedTime(elapsedSeconds));
+
+            // make sure this is visible in case we re-loaded the UI for a call in progress
+            mCallRecordingTimer.setVisibility(View.VISIBLE);
+        }
+    };
 
     @Override
     CallCardPresenter.CallCardUi getUi() {
@@ -127,6 +152,10 @@ public class CallCardFragment extends BaseFragment<CallCardPresenter, CallCardPr
         mPosition = (TextView) view.findViewById(R.id.position);
         mOrganization = (TextView) view.findViewById(R.id.organization);
         mCity = (TextView) view.findViewById(R.id.city);
+        mCallRecordingTimer = (TextView) view.findViewById(R.id.callRecordingTimer);
+
+        CallRecorder recorder = CallRecorder.getInstance();
+        recorder.addRecordingProgressListener(mRecordingProgressListener);
     }
 
     @Override
