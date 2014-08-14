@@ -135,4 +135,7 @@
 
     <!-- Height of translucent shadow effect -->
     <dimen name="translucent_shadow_height">2dp</dimen>
+
+    <!-- Size of call recorder progress timer text -->
+    <dimen name="recording_progress_text_size">64dp</dimen>
 </resources>
