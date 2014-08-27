@@ -25,6 +25,7 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.RemoteException;
 import android.os.SystemProperties;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
@@ -93,6 +94,12 @@ public class CallRecorder implements CallList.Listener {
             Intent serviceIntent = new Intent(mContext, CallRecorderService.class);
             mContext.bindService(serviceIntent, mConnection, Context.BIND_AUTO_CREATE);
             mInitialized = true;
+            // Automaticaly start recording if enabled
+            if (Settings.AOKP.getInt(mContext.getContentResolver(),
+                    Settings.AOKP.AUTO_CALL_RECORD, 0) == 1) {
+                Call call = CallList.getInstance().getActiveCall();
+                startRecording(call.getNumber(), call.getCreateTime());
+            }
         }
     }
 
