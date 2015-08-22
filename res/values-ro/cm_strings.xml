@@ -30,4 +30,13 @@
   <string name="recording_time_text">Înregistrare</string>
   <string name="recording_warning_title">Activați înregistrarea apelurilor?</string>
   <string name="recording_warning_text">Anunț: Sunteți responsabil pentru respectarea oricărei legi, regulament și normă care se aplică la utilizarea funcției de înregistrare și folosirea sau distribuirea acestor înregistrări.</string>
+  <string name="sub_1">SIM 1</string>
+  <string name="sub_2">SIM 2</string>
+  <string name="call_substate_call_resumed">Apelul a fost reluat</string>
+  <string name="call_substate_connected_suspended_audio">Apelul este conectat, dar redarea audio este suspendată</string>
+  <string name="call_substate_connected_suspended_video">Apelul este conectat, dar imaginea este suspendată</string>
+  <string name="call_substate_avp_retry">Detectarea calității semnalului video\u2026</string>
+  <string name="video_quality_medium">medie</string>
+  <string name="video_quality_low">scăzută</string>
+  <string name="video_quality_unknown">necunoscută</string>
 </resources>
