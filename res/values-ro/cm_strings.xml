@@ -48,4 +48,7 @@
   <string name="video_quality_medium">medie</string>
   <string name="video_quality_low">scăzută</string>
   <string name="video_quality_unknown">necunoscută</string>
+  <!-- In-call screen: Video Call Options for VT or plugin handoff -->
+  <!-- Description of the target to block a call -->
+  <!-- [CHAR LIMIT=12] -->
 </resources>
